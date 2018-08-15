@@ -1,0 +1,179 @@
+
+#include <Servo.h>
+#define XspeedPin 6
+#define XnormalRotation 7
+#define XbackRotation 8
+
+#define YspeedPin 3
+#define YnormalRotation 4
+#define YbackRotation 5
+
+#define ZspeedPin 10
+#define ZnormalRotation 11
+#define ZbackRotation 12
+
+const int buttonCoin = 45;
+const int buttonStart = 47;
+
+
+int MotorSpeed = 255;  // default speed and hold variable
+
+int joystick_x = A0;    
+int joystick_y = A1;
+int joystick_z = 2;   
+int servoPower = 9; 
+Servo myservo;  
+
+void setup()
+{
+ pinMode(XbackRotation, OUTPUT);
+ pinMode(XnormalRotation, OUTPUT);
+ pinMode(XspeedPin, OUTPUT);
+ pinMode(joystick_z,INPUT_PULLUP); 
+ myservo.attach(9);   
+ Serial.begin(9600);              
+}
+
+void loop()
+{
+ int x = analogRead(joystick_x);      
+ int y = analogRead(joystick_y);      
+ int z = digitalRead(joystick_z);    
+  Serial.print("X: ");                   
+  Serial.print(x);                          
+  Serial.print("  Y: ");
+  Serial.print(y);                          
+  Serial.print("  Z: ");
+  Serial.print(z);                         
+                                             
+       runGame();                                      
+
+} 
+
+void XMotorF()
+{
+	analogWrite(XspeedPin, MotorSpeed);
+	digitalWrite(XnormalRotation,LOW);
+	digitalWrite(XbackRotation, HIGH);
+	Serial.println("  X Forward");
+}
+
+void XMotorB()
+{
+	analogWrite(XspeedPin, MotorSpeed);
+	digitalWrite(XbackRotation,LOW);
+	digitalWrite(XnormalRotation, HIGH);
+	Serial.println("  X Backward");
+}
+
+
+void XMotorOff()
+{
+	analogWrite(XspeedPin, 0);
+	digitalWrite(XbackRotation,LOW);
+	digitalWrite(XnormalRotation, LOW);
+	Serial.println("  X Stop");
+}
+
+void YMotorF()
+{
+	analogWrite(YspeedPin, MotorSpeed);
+	digitalWrite(YnormalRotation,HIGH);
+	digitalWrite(YbackRotation, LOW);
+}
+
+void YMotorB()
+{
+	analogWrite(YspeedPin, MotorSpeed);
+	digitalWrite(YnormalRotation,LOW);
+	digitalWrite(YbackRotation, HIGH);
+}
+
+void YMotorOff()
+{
+	analogWrite(YspeedPin, 0);
+	digitalWrite(YbackRotation,LOW);
+	digitalWrite(YnormalRotation, LOW);
+	Serial.println("  Y Stop");
+}
+
+void ZmotorDown()
+{	
+	analogWrite(ZspeedPin, MotorSpeed);
+	digitalWrite(ZnormalRotation,LOW);
+	digitalWrite(ZbackRotation, HIGH);
+
+	delay(3500);
+
+	analogWrite(ZspeedPin, 0);
+	digitalWrite(ZnormalRotation,LOW);
+	digitalWrite(ZbackRotation, LOW);
+}
+
+void ZmotorUP()
+{	
+	analogWrite(ZspeedPin, MotorSpeed);
+	digitalWrite(ZnormalRotation,HIGH);
+	digitalWrite(ZbackRotation, LOW);
+
+	delay(4000);
+
+	analogWrite(ZspeedPin, 0);
+	digitalWrite(ZnormalRotation,LOW);
+	digitalWrite(ZbackRotation, LOW);
+}
+
+void grab()
+{
+	for(int val=145; val>45; val--)
+	{
+	myservo.write(val);
+	delay(15);
+	}
+}
+
+void runGame()
+{
+
+	 int x = analogRead(joystick_x);      
+ int y = analogRead(joystick_y);      
+ int z = digitalRead(joystick_z); 
+
+	if(x>600)
+	{
+		XMotorF();
+ 	}
+ 	else if(x<450)
+	{
+		XMotorB();
+ 	}
+	 else
+ 	{
+ 		XMotorOff();
+	}
+
+	delay(100);
+
+	 if(y>600)
+ 	{
+		YMotorF();
+ 	}
+ 	else if(y<450)
+ 	{
+		YMotorB();
+ 	}
+ 	else
+ 	{
+ 		YMotorOff();
+ 	}
+ 	if(z==0)
+ 	{
+ 		ZmotorDown();
+ 		delay(1000);
+ 		grab();
+ 		delay(2000);
+ 		ZmotorUP();
+
+
+ 	}
+}
